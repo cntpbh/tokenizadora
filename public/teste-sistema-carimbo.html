@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Sistema de Carimbo IBEDIS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1a3f4d;
+        }
+        .test-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input, select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px;
+            background-color: #1a3f4d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2a5f6d;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .links {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .links a {
+            color: #1a3f4d;
+            text-decoration: none;
+            padding: 8px;
+            border: 1px solid #1a3f4d;
+            border-radius: 5px;
+            display: inline-block;
+            text-align: center;
+        }
+        .links a:hover {
+            background-color: #1a3f4d;
+            color: white;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a3f4d;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste do Sistema de Carimbo IBEDIS</h1>
+        
+        <form class="test-form" id="testForm">
+            <label>
+                Arquivo (PDF ou JPG):
+                <input type="file" name="file" accept=".pdf,.jpg,.jpeg" required>
+            </label>
+            
+            <label>
+                Título do Documento:
+                <input type="text" name="documentTitle" value="Documento de Teste" required>
+            </label>
+            
+            <label>
+                Descrição:
+                <input type="text" name="documentDescription" value="Teste do sistema de carimbo">
+            </label>
+            
+            <label>
+                Nome do Solicitante:
+                <input type="text" name="requesterName" value="Teste IBEDIS" required>
+            </label>
+            
+            <label>
+                Email:
+                <input type="email" name="requesterEmail" value="teste@ibedis.com.br" required>
+            </label>
+            
+            <label>
+                CPF/CNPJ:
+                <input type="text" name="requesterCpfCnpj" value="00.000.000/0001-00">
+            </label>
+            
+            <label>
+                Método de Pagamento:
+                <select name="paymentMethod">
+                    <option value="pix">PIX</option>
+                    <option value="crypto">Crypto</option>
+                </select>
+            </label>
+            
+            <button type="submit">🚀 Testar Sistema de Carimbo</button>
+        </form>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processando documento...</p>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Função para calcular SHA-256
+        async function calculateSHA256(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        // Enviar formulário
+        document.getElementById('testForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const file = formData.get('file');
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            
+            // Mostrar loading
+            loadingDiv.style.display = 'block';
+            resultDiv.innerHTML = '';
+            
+            try {
+                // Calcular hash do arquivo
+                const hash = await calculateSHA256(file);
+                formData.append('documentHash', hash);
+                formData.append('price', '4.90');
+                formData.append('documentCategory', 'teste');
+                
+                // Fazer requisição
+                const response = await fetch('/api/documentos/register-with-stamp', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                // Esconder loading
+                loadingDiv.style.display = 'none';
+                
+                // Mostrar resultado
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+✅ SUCESSO!
+
+Código do Certificado: ${data.registration.certificate_code}
+Hash do Documento: ${data.registration.document_hash}
+ID do Registro: ${data.registration.id}
+
+${data.pix ? `
+DADOS PIX:
+- Payment ID: ${data.pix.payment_id}
+- QR Code: ${data.pix.qr_code ? 'Disponível' : 'Não disponível'}
+` : ''}
+
+${data.crypto ? `
+DADOS CRYPTO:
+- Wallet: ${data.crypto.wallet_address}
+- Network: ${data.crypto.network}
+- Tokens: ${data.crypto.accepted_tokens.join(', ')}
+` : ''}
+                        </div>
+                        
+                        <div class="links">
+                            ${data.files.stamped_url ? `<a href="${data.files.stamped_url}" target="_blank">📄 Ver Documento Carimbado</a>` : ''}
+                            ${data.files.certificate_url ? `<a href="${data.files.certificate_url}" target="_blank">🏆 Ver Certificado PDF</a>` : ''}
+                            ${data.files.original_url ? `<a href="${data.files.original_url}" target="_blank">📁 Ver Arquivo Original</a>` : ''}
+                            <a href="/certificado-documento/${data.registration.certificate_code}" target="_blank">🔍 Ver Página do Certificado</a>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+❌ ERRO!
+
+${data.error}
+${data.details || ''}
+
+Status HTTP: ${response.status}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                resultDiv.innerHTML = `
+                    <div class="result error">
+❌ ERRO DE CONEXÃO!
+
+${error.message}
+
+Verifique:
+- Se o servidor está rodando
+- Se a rota está correta
+- Se as variáveis de ambiente estão configuradas
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
