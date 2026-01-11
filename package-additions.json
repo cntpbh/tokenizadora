@@ -1,0 +1,19 @@
+{
+  "name": "ibedis-document-stamp-implementation",
+  "version": "1.0.0",
+  "description": "Implementação de carimbo e storage para documentos IBEDIS",
+  "dependencies_to_add": {
+    "pdf-lib": "^1.17.1",
+    "sharp": "^0.33.2",
+    "qrcode": "^1.5.3"
+  },
+  "devDependencies_to_add": {
+    "@types/qrcode": "^1.5.5"
+  },
+  "install_command": "npm install pdf-lib sharp qrcode && npm install -D @types/qrcode",
+  "notes": {
+    "pdf-lib": "Manipulação de PDFs em JavaScript puro",
+    "sharp": "Processamento de imagens (JPG)",
+    "qrcode": "Geração de QR Codes"
+  }
+}

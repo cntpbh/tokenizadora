@@ -1,0 +1,23 @@
+{
+  "installCommand": "rm -rf node_modules && rm -f package-lock.json && npm install --legacy-peer-deps",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "crons": [
+    {
+      "path": "/api/cron/verify-payments",
+      "schedule": "*/5 * * * *"
+    }
+  ],
+  "functions": {
+    "src/app/api/documentos/registrar/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/documentos/register-with-stamp/route.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "NODE_OPTIONS": "--max-old-space-size=4096"
+  }
+}

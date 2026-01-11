@@ -1,0 +1,40 @@
+{
+  "name": "ibedis-token-platform",
+  "version": "1.0.5",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "mercadopago": "^2.0.15",
+    "@tanstack/react-query": "^4.36.1",
+    "@thirdweb-dev/chains": "^0.1.84",
+    "@thirdweb-dev/react": "^4.4.0",
+    "@thirdweb-dev/sdk": "^4.0.0",
+    "ethers": "^5.7.2",
+    "lucide-react": "^0.294.0",
+    "next": "14.2.21",
+    "pdf-lib": "^1.17.1",
+    "qrcode": "^1.5.3",
+    "qrcode.react": "^3.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sharp": "^0.33.5",
+    "resend": "^3.0.0",
+    "jspdf": "^2.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.3.2"
+  }
+}
